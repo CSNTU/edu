@@ -1,0 +1,49 @@
+﻿<Window x:Class="OfflineClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:OfflineClient"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="MainWindow"
+        Width="800"
+        Height="450"
+        mc:Ignorable="d">
+    <Grid>
+        <StackPanel Margin="20" Orientation="Vertical">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Margin" Value="0,0,8,0" />
+                </Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Margin" Value="0,0,0,20" />
+                </Style>
+            </StackPanel.Resources>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Nearest:</TextBlock>
+                <TextBlock x:Name="NearestText" Foreground="Green" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Farthest:</TextBlock>
+                <TextBlock x:Name="FarthestText" Foreground="Red" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Score:</TextBlock>
+                <TextBlock x:Name="ScoreText" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Average Time:</TextBlock>
+                <TextBlock x:Name="AveTimeText" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Max Time:</TextBlock>
+                <TextBlock x:Name="MaxTimeText" />
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</Window>
