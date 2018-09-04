@@ -85,14 +85,11 @@ Samples-for-ai样例库中使用的MNIST示例，在初运行时会从<http://ya
 
 ## 训练模型
 
-为了支持我们新增的六种数学符号，我们需要修改原始的MNIST模型训练脚本（即上一课中的`mnist.py`）。本文已经做好了必要的修改，修改后的脚本可以通过克隆<https://github.com/chelxom/extended_mnist_calculator>这一Git仓库得到。我们需要使用如下命令进行克隆：
-```cmd
-git clone https://github.com/chelxom/extended_mnist_calculator
-```
+为了支持我们新增的六种数学符号，我们需要修改原始的MNIST模型训练脚本（即上一课中的`mnist.py`）。
  
 这一仓库包含两部分内容：
-- 在`/training@@@@还没上传`路径下，是支持扩展的MNIST数据集的训练脚本`mnist_extension.py`。这一脚本要求额外的命令行参数`--extension_dir`，用于指定我们扩展的六种数学符号的位图所在；
-- 在`/MNIST.App`目录下，是本文这款应用的主体代码。我们会在下文中用到。
+- 在[`./tensorflow_model/`](./tensorflow_model/)路径下，是支持扩展的MNIST数据集的训练脚本`mnist_extension.py`。这一脚本要求额外的命令行参数`--extension_dir`，用于指定我们扩展的六种数学符号的位图所在；
+- 在[`./extended_mnist_calculator/MNIST.App`](./extended_mnist_calculator/MNIST.App/)目录下，是本文这款应用的主体代码。我们会在下文中用到。
 上文中，我们要求新搜集的数据最后需要被格式化为以色值0（黑色）为前景色，以色值255（白色）为前景色的单通道位图。我们修改后的训练脚本会读取这些位图并其反色，以到达和原始MNIST数据同样的效果（也和我们应用中输入处理的部分一致）。
 假设我们存放`add、minus`等六个文件夹的目录是`D:\extension_images`，我们就可以在克隆好了的仓库的`/training`目录下，通过命令行执行：
 ```cmd
@@ -105,7 +102,7 @@ python mnist_extension.py --extension_dir D:\extension_images
  
 我们对MNIST模型的训练是基于卷积神经网络的。并且上本中的脚本在处理扩展的符号位图之外，并没有对用于训练原始MNIST模型的卷积神经网络的结构进行修改。我们知道系统的结构决定其功能，那么我们针对原始MNIST数据设计的网络结构能否支撑扩展后的数据集呢？对这一问题最简单的回答就是进行一次训练并观察模型性能。
 
-用这种方法进行试验后，我们通过错误率（主要是Validation error，即每100次小批量训练之后，模型当前在整个验证集上的错误率；和Test error，及训练结束后模型在整个测试集上的错误率）发现新模型的性能还是不错的。足以支持我们接下来的应用。
+用这种方法进行试验后，我们通过错误率（主要是Validation error，即每100次小批量训练之后，模型当前在整个验证集上的错误率；和Test error，即训练结束后模型在整个测试集上的错误率）发现新模型的性能还是不错的。足以支持我们接下来的应用。
 
 # 子问题：分割多个手写字符
 
