@@ -112,6 +112,7 @@ python mnist.py
 > 这一步骤需要用到我们在实际训练章节中训练出的模型。如果尚未训练完成，请等待训练完成后再继续阅读。
 
 1.	首先创建模型项目。在解决方案资源管理器中，右击解决方案，指向添加，再点击新建项目，如下图所示：
+
 ![新建项目](./md_resources/image4.png)
 
 2.	在弹出的添加新项目的对话框里，选择 **AI Tools** 下的 **Inference** 后，在右边选择 **模型推理类库(.NET Framework)**，如下图所示。然后在下面的 **名称** 处改为 **Model**，并点击确定。
@@ -127,9 +128,11 @@ python mnist.py
 ![新打开的创建向导对话框](./md_resources/image6.png)
 
 4.	找到之前训练出的 `saved_model.pb` 文件（一般在samples-for-ai样例库下的 `examples\tensorflow\MNIST\export` 文件夹内），并点击 **打开**。如下图所示。
+
 ![选取训练好的MNIST模型文件](./md_resources/image7.png)
 
 5.	点击打开后，会出现 **分析模型** 的过程，等待分析完成。分析完成后，再如图所示在类名中输入 **Mnist**，最后点击 **确定**。第一次导入模型会下载所依赖的库，因此，**正在创建项目"Model"...** 的对话框会显示较长时间。
+
 ![填入类名“Mnist”](./md_resources/image8.png)
 
 > **注意**
@@ -147,9 +150,11 @@ python mnist.py
 ![为MNIST.App项目添加引用](./md_resources/image9.png)
 
 7.	在弹出的对话框中，点击 **项目**，并在右侧将 **Model** 勾上。这样就能在窗体项目MNIST.App中引用 Model 项目中用于访问MNIST模型的代码了。如图所示。
+
 ![添加对Model项目的引用](./md_resources/image10.png)
 
 8.	现在按下 CTRL+F5，或者点击工具栏上的 **启动** 按钮。之后便会如下图一样，我们的手写数字识别应用运行起来了！
+
 ![应用正确运行的效果](./md_resources/image11.png)
 
 ##	理解代码
@@ -162,13 +167,12 @@ python mnist.py
 >
 > 代码中包含了非常详尽的注释。建议在读完本章节后，再通读代码中的注释，以便更深入地理解整个代码逻辑。
 
-
-
 ###	界面联动
 
 1.	展开 **MNIST.App** 项目，找到 `MainWindow.cs` 文件。所有的界面设计和代码都在这里。先双击它，打开设计界面。可以看到，设计界面和程序实际运行起来的效果非常像。窗体上包含了三个控件：`PictureBox`，`Label`，以及 `Button`。稍后会介绍控件对应的变量名称，以及绑定的控件事件响应函数、这些控件用途等。
 
 2.	在窗体的设计界面上右击，并选择 **查看代码**，可以看到核心的代码。如图所示。
+
 ![从设计界面进入代码编辑器](./md_resources/image12.png)
 
 3.	打开代码后，可以看到，几乎每一行代码都有对应的注释。除了类里的 `ImageSize` 等几个变量外，剩下的逻辑几乎都在事件响应函数中。这些响应函数是在控件属性的事件面板中添加的。每个控件都在代码中可以通过变量名称来使用。界面逻辑的一些重要信息如下：
@@ -176,11 +180,8 @@ python mnist.py
 变量名称 | 控件类型 | 绑定的事件响应函数 | 控件的用途
 --- | ---| --- | ---
 `Form1` | `Form` | `Form1_Load` | 主窗体。加载时会一次性初始化部分变量。
-
-`writeArea` | `PictureBox` | `writeArea_MouseDown`,\ `writeArea_MouseMove`,\ `writeArea_MouseUp` | 手写区域。在鼠标操作时，响应鼠标的按下（MouseDown)、移动（MouseMove）、释放（MouseUp）事件。在触摸屏操作时，与鼠标操作类似，会响应手指的接触屏幕、在屏幕上移动、离开屏幕的事件。
-
+`writeArea` | `PictureBox` | `writeArea_MouseDown`, <br> `writeArea_MouseMove`, <br> `writeArea_MouseUp` | 手写区域。 <br> 在鼠标操作时，响应鼠标的按下（MouseDown)、移动（MouseMove）、释放（MouseUp）事件。 <br> 在触摸屏操作时，与鼠标操作类似，会响应手指的接触屏幕、在屏幕上移动、离开屏幕的事件。
 `outputText` | `Label` | | 文本标签。显示推理结果的数字。
-
 `clean` | `Button` | `clean_Click` | 清除按钮。在每次推理前清除手写区内容，及文本标签显示的数字。
 
 ###	数据预处理
@@ -333,12 +334,15 @@ long inferResult = model.Infer(new List<IEnumerable<float>> { image }).First().F
 如果在添加模型项目完成后，没有在目录下看到 `packages.config` 文件。通常是因为网络不稳定，下载超时造成的。请参考下面的过程手工下载依赖的库。
 
 右击 **Model** 项目，选择 管理 **NuGet 程序包...**。
+
 ![打开NuGet管理界面](./md_resources/image14.png)
 
 如下图所示，在弹出的 NuGet 页面里，点击 **浏览**，然后输入 **ml.scoring**，来手工搜索需要的 NuGet 包。
+
 ![搜索“Microsoft.ML.Scoring”包](./md_resources/image15.png)
 
 点选搜索出的 **Microsoft.ML.Scoring**，点击右边的 **安装**，然后点击 **确定**，如下图所示。然后我们会在输出界面看到开始添加 **Microsoft.ML.Scoring** 的信息。如果网速较慢，这一步会花费一些时间。完成后，即可根据本文内容进行下一步操作。
+
 ![安装“Microsoft.ML.Scoring”包](./md_resources/image16.png)
 
 ##	运行时提示“系统找不到指定的路径” 
