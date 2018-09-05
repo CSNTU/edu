@@ -5,7 +5,7 @@
 
 效果如下图：
 
-![Sample image](./sample.png)
+![Sample image](./sample.PNG)
 
 # 什么是“黄金点”游戏？
 请在邹欣老师的博客查看游戏介绍：[创新的时机 – 黄金点游戏](https://blog.csdn.net/SoftwareTeacher/article/details/25794525)
