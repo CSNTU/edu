@@ -24,7 +24,6 @@
                 <TextBlock>Nearest:</TextBlock>
                 <TextBlock x:Name="NearestText" Foreground="Green" />
             </StackPanel>
-
             <StackPanel Orientation="Horizontal">
                 <TextBlock>Farthest:</TextBlock>
                 <TextBlock x:Name="FarthestText" Foreground="Red" />
@@ -33,6 +32,15 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock>Score:</TextBlock>
                 <TextBlock x:Name="ScoreText" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Ranking:</TextBlock>
+                <TextBlock x:Name="RankingText" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Max and Ave. Score:</TextBlock>
+                <TextBlock x:Name="MaxAveScoreText" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">

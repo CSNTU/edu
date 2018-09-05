@@ -3,18 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static System.Math;
 
 namespace OfflineClient
 {
@@ -37,8 +28,7 @@ namespace OfflineClient
         // 请注意，该函数会在后台线程执行。
         private static Tuple<double, double> GetNumber(string input)
         {
-            System.Threading.Thread.Sleep(40);
-            return Tuple.Create(42.0, 1.5d);
+            return Tuple.Create(42.0, 1.5);
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -49,11 +39,13 @@ namespace OfflineClient
             var totalRound = meta[0];
             var columnCount = meta[1];
 
-            int score = 0;
             int nearestCount = 0;
             int farthestCount = 0;
             TimeSpan sumTime = TimeSpan.Zero;
             TimeSpan maxTime = TimeSpan.MinValue;
+            var scoreHelper = new Utils.ScoreHelper(lines, Delimiter);
+
+            int?[] scores = new int?[columnCount / 2 + 1]; // 使用 Nullable<int> 作为得分的类型，以辨别重头到尾都没有提交过合法值的情况。
 
             for (int i = 0; i < totalRound; i++)
             {
@@ -88,67 +80,41 @@ namespace OfflineClient
                 {
                     if (!submitted.All(IsValidNumber))
                     {
+                        // submitted 变量不为 null，即确实提交了有效的数字。
                         submitted = null;
                     }
                 }
 
-                // submitted 变量不为 null，即确实提交了有效的数字。
-                if (submitted != null)
-                {
-                    // 最后一回合时，还需要取最后一行数据来计算结果，所以最后一行不能用作历史数据。
-                    var numbersThisRound = lines[i + 1].Split(Delimiter)
-                        .Skip(1) // 在计算当前轮的结果时，去掉历史数据里的黄金点，并重新计算。
-                        .Select(double.Parse).ToList();
-                    numbersThisRound.AddRange(submitted);
-                    var newG = numbersThisRound.Average() * 0.618;
+                var scoreResult = scoreHelper.CalculateScore(i, submitted);
+                scores = scores.Zip(
+                    scoreResult.Scores,
+                    (accum, thisRound) => thisRound.HasValue ? (thisRound.Value + (accum ?? 0)) : accum // 第一次得到分数时（包括0分），初始化总分数。
+                ).ToArray();
+                nearestCount += (scoreResult.HasNearest ? 1 : 0);
+                farthestCount += (scoreResult.HasFarthest ? 1 : 0);
 
-                    // 每个数据都有序号（从0开始），以便我们追踪。当前的参与者提交的数据，放在最后。
-                    int[] indexes = { numbersThisRound.Count - 1, numbersThisRound.Count - 2 };
-
-                    // 不只是进行简单地排序。
-                    // 由于可能有一样的数据，所以我们先按数据进行分组，然后再排序。
-                    var sortedGroup = numbersThisRound
-                        .Select((n, index) => new { Diff = Abs(n - newG), Index = index }) // 一种 Enumerable.Select 方法的重载，是同时提供了从0开始的序号的。
-                        .GroupBy(diffAndIndex => diffAndIndex.Diff)
-                        .OrderBy(group => group.Key) // group.Key 就是重复的那个数字。
-                        .ToList();
-
-                    // 由于我们对可能相同的数据做了分组，又记了序号，所以我们只需检查当前提交的数对应的序号，
-                    // 是否属于距离最小组，或距离最大组即可。
-                    var nearestIndexes = new HashSet<int>(sortedGroup.First().Select(di => di.Index));
-                    var farthestIndexes = new HashSet<int>(sortedGroup.Last().Select(di => di.Index));
-
-                    int thisRoundScore = 0;
-
-                    var submittedNotNearestIndexes = indexes.Where(idx => !nearestIndexes.Contains(idx)).ToArray();
-                    if (submittedNotNearestIndexes.Length < indexes.Length)
-                    {
-                        // 存在某个提交的数，属于距黄金点最近的一组。并且最多只得一次分。
-                        thisRoundScore += numbersThisRound.Count / 2 - 1; // 统计人数时不计当前玩家。
-                        nearestCount++;
-                    }
-
-                    if (submittedNotNearestIndexes.Any(farthestIndexes.Contains))
-                    {
-                        // 除了最近的数以外，还存在最远的数。并且最多只扣一次分。
-                        // 如果所有数都一样，从上面可知，算是得分。
-                        thisRoundScore -= 2;
-                        farthestCount++;
-                    }
-
-                    score += thisRoundScore;
-                }
-
+                // 不管数字有效与否，总是统计运行时间。
                 sumTime += br.ElapsedTime;
                 maxTime = maxTime < br.ElapsedTime ? br.ElapsedTime : maxTime;
 
+                int? score = scores.Last();
+                int ranking = scores.Select((s, idx) => new { Score = s, Index = idx }) // 绑定得分和序号（从0开始）。我们只用唯一序号来标识参加者，而不用可能重复的得分数。
+                    .OrderByDescending(si => si.Score) // 先按得分排序
+                    .Select((si, orderingIdx) => new { SI = si, OrderingIdx = orderingIdx }) // 按排序后的顺序再赋予一次序号（从0开始）
+                    .First(orderedSi => orderedSi.SI.Index == scores.Length - 1) // 找到序号是最大值的数据块，也即当前玩家的。
+                    .OrderingIdx + 1; // 排序后的序号 + 1，就是当前玩家的排名（从1开始）。
+
                 NearestText.Text = $"{nearestCount}/{i + 1}";
                 FarthestText.Text = $"{farthestCount}/{i + 1}";
-                ScoreText.Text = $"{score}";
+
+                ScoreText.Text = score?.ToString() ?? "N/A";
+                ScoreText.Foreground = score > 0 ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+
+                MaxAveScoreText.Text = $"{scores.Max()} & {scores.Average():.##}";
+                RankingText.Text = $"{ranking}/{scores.Length}";
+
                 AveTimeText.Text = $"{sumTime.TotalMilliseconds / (i + 1)}ms";
                 MaxTimeText.Text = $"{maxTime.TotalMilliseconds}ms";
-
-                ScoreText.Foreground = score < 0 ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Green);
             }
         }
 
