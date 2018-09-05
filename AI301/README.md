@@ -12,4 +12,4 @@
     * 教案 [self-built_mnist_extenstion.md 文件](./self-built_mnist_extenstion/self-built_mnist_extenstion.md)
     * 相关代码 [extended_mnist_calculator/ 目录](./self-built_mnist_extenstion/extended_mnist_calculator/)
 * [5.1 问答系统和对话机器人服务](./QAClient)
-* [10 机器学习平台建设](./AI_Platform)
+* [10 机器学习平台建设](./AIPlatform)
