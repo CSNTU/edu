@@ -83,7 +83,7 @@ namespace OfflineClient
                 });
 
                 // 检查提交的数字是否有效。
-                var submitted = YieldFromTuple(br.Candidate).ToArray();
+                var submitted = br.Candidate == null ? null : YieldFromTuple(br.Candidate).ToArray();
                 if (submitted != null)
                 {
                     if (!submitted.All(IsValidNumber))
